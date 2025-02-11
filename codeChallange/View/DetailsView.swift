@@ -27,7 +27,7 @@ struct DetailsView: View {
                 }
             }
 
-            Text(image.title ?? "No title")
+            Text(image.title ?? ConstantStrings.noTitle)
                 .font(.title)
                 .padding()
 
@@ -43,6 +43,6 @@ struct DetailsView: View {
                 .font(.footnote)
                 .padding()
         }
-        .navigationTitle("Image Details")
+        .navigationTitle(DetailsTitles.title)
     }
 }

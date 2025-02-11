@@ -10,6 +10,7 @@ enum ConstantStrings {
     static let baseURLString = "https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1&tags="
     static let errorData = "No images found"
     static let messageError = "Fail loading image"
+    static let noTitle = "No Title"
 }
 
 enum DetailsTitles {

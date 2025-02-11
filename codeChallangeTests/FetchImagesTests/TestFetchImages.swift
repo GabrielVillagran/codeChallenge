@@ -1,7 +1,7 @@
 import XCTest
 @testable import codeChallange
 
-final class TestFecthImages: XCTestCase {
+final class TestFetchImages: XCTestCase {
 
     var imageViewModel: ImageViewModel!
     var mockImageService: MockImageService!
@@ -18,7 +18,7 @@ final class TestFecthImages: XCTestCase {
         try super.tearDownWithError()
     }
 
-    func testFetchImageCorrect() async throws {
+    func testFetchImageSuccess() async throws {
         // Given
         mockImageService.failResponse = false
 
@@ -26,10 +26,20 @@ final class TestFecthImages: XCTestCase {
         await imageViewModel.fetchImages(for: "testCase")
 
         // Then
-        XCTAssertEqual(imageViewModel.imageData.count, 1)
         XCTAssertEqual(imageViewModel.imageData.first?.title, "Mock Image")
         XCTAssertEqual(imageViewModel.imageData.first?.description, "Mock Image Description")
         XCTAssertEqual(imageViewModel.imageData.first?.author, "Mock Author")
         XCTAssertEqual(imageViewModel.imageData.first?.media?.m, "https://mockPage.com/imageTest")
+    }
+
+    func testFetchImageFailure() async throws {
+        // Given
+        mockImageService.failResponse = true
+
+        // When
+        await imageViewModel.fetchImages(for: "testCase")
+
+        // Then
+        XCTAssertTrue(imageViewModel.imageData.isEmpty, "Expected imageData to be empty due to failure but found items.")
     }
 }

@@ -6,8 +6,10 @@ struct ImageView: View {
     @State private var searchImageName = ""
     @State private var searchIsActive = false
 
-    private var calculateColumnsSize: [GridItem] {
-        Array(repeating: GridItem(.flexible()), count: calculateColumns())
+    private func calculateColumns(for screenWidth: CGFloat) -> [GridItem] {
+        let itemWidth: CGFloat = 150
+        let columns = max(Int(screenWidth / itemWidth), 1)
+        return Array(repeating: GridItem(.flexible()), count: columns)
     }
 
     private func calculateColumns() -> Int {
@@ -23,29 +25,32 @@ struct ImageView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                ScrollView {
-                    LazyVGrid(columns: calculateColumnsSize, spacing: 20) {
-                        ForEach(viewModel.imageData, id: \.title) { image in
-                            if let urlString = image.media?.m, let url = URL(string: urlString) {
-                                NavigationLink(destination: DetailsView(image: image)) {
-                                    ImageCell(imageURL: url)
-                                        .frame(maxWidth: .infinity)
-                                        .background(Color.gray.opacity(0.2))
+                GeometryReader { geometry in
+                    let columns = calculateColumns(for: geometry.size.width)
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 20) {
+                            ForEach(viewModel.imageData, id: \.title) { image in
+                                if let urlString = image.media?.m, let url = URL(string: urlString) {
+                                    NavigationLink(destination: DetailsView(image: image)) {
+                                        ImageCell(imageURL: url)
+                                            .frame(maxWidth: .infinity)
+                                            .background(Color.gray.opacity(0.2))
+                                    }
                                 }
                             }
                         }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                 }
+
                 .frame(maxHeight: 650)
             }
             .searchable(text: $searchImageName, isPresented: $searchIsActive)
-            .onChange(of: searchImageName) { newValue in
+            .onChange(of: searchImageName) {
                 DispatchQueue.main.async {
-                    print(searchIsActive, searchImageName)
-                    viewModel.fetchImages(for: newValue)
+                    viewModel.fetchImages(for: searchImageName)
                 }
             }
-        }                   
+        }
     }
 }
